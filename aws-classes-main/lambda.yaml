@@ -87,7 +87,7 @@ Parameters:
   MapTagValue:
     Description: please enter environment variable MAPTAG value.
     Type:  String
-    Default: mig4I96YDPBNH
+    Default: abcdefg111
   ConfigRuleName:
     Description: please enter the name of your Config configuration Rule for MAP resource Tagging.
     Type:  String
