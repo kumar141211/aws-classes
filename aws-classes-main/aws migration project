@@ -1,0 +1,17 @@
+############## AWS migration project #########################
+
+1. set-up site-to-site VPN or direct connect for aws data ceneter connection.
+
+2. in aws configure a new network for migration work (vpc).
+
+3. create a IAM cli user with admin rights.
+
+4. in aws configure lunch template in migration hub according to our server needs.
+
+5. installing agent in customer server according to windows/linux.
+
+6. allow 1500 port from customer firewall for vpc cidr.
+
+7. launch test server from migration hub dash board. -- this will create a replica of on-prem server.
+
+8. launch cutover server and go live.

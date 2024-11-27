@@ -1,0 +1,595 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "Parent cloudformation template calling the nested MAPTagRole, lambda function, configrulefirst and second stack."
+
+Parameters:
+  CustomerName:
+    Description: Please Enter the name of the Customer.
+    Type: String
+    Default: lamda-demo
+  ProjectTeam:
+    Description: Plesae Enter the name of Project.
+    Type: String
+    Default: UIPL
+  ENV:
+    Description: Please Select the customer environment where the deployment has to be done.
+    Type: String
+    Default: prod
+    AllowedValues: 
+    - prod
+    - dev
+    - stg 
+  LambdaRoleName:
+    Description: please enter the name of IAM role to be applied with Lambda function.
+    Type:  String
+    Default: lamda-demo-Map-Migrated-Lambda-Config-MAP-Tagging-Role
+  IAMpolicyName1:
+    Description: please enter the name of IAM policy to be applied for tagging permission of all services to lambda.
+    Type:  String
+    Default: lamda-demo_resource_tagging_on_multiple_services_MAP_Lambda_policy
+  IAMpolicyName2:
+    Description: please enter the name of IAM policy to be applied for placing lambda invoking logs in cloudwatch logs with Lambda.
+    Type:  String
+    Default: lamda-demo_AWSLambdaBasicExecutionRole_Lambda_policy
+  FunctionName:
+    Description: Please enter the lambda fucntion name to trigger tagging on MAP resources.
+    Type: String
+    Default: lamda-demo-Map-Migrated-Lambda-Config-Resource-Tagging-func
+  FunctionDescription:
+    Description: Please enter the lambda fucntion description.
+    Type: String
+    Default: "This Lambda function is for applying MAP tag on the selected AWS MAP services."
+  MemorySize:
+    Description: Enter The amount of memory available to the function at runtime in MB.
+    Type: Number
+    Default: '128'
+    MinValue: '128'
+    MaxValue: '10240'
+  Runtime:
+    Description: Please Select the identifier of the function's runtime.
+    Type: String
+    Default: python3.9
+    AllowedValues: 
+    - dotnet6
+    - dotnetcore1.0
+    - dotnetcore2.0
+    - dotnetcore2.1
+    - dotnetcore3.1
+    - python2.7
+    - python3.10
+    - python3.6
+    - python3.7
+    - python3.8
+    - python3.9
+    - nodejs
+    - nodejs10.x
+    - nodejs12.x
+    - nodejs14.x
+    - nodejs16.x
+    - nodejs18.x
+    - nodejs4.3
+    - nodejs4.3-edge
+    - nodejs6.10 
+    - nodejs8.10
+    - provided.al2
+    - go1.x 
+    - java11
+    - java17
+    - java8
+    - java8.al2
+    - provided
+    ConstraintDescription: You can select the Runtime for lambda function  from the Allowed value only.
+  Timeout:
+    Description: Enter The amount of time (in seconds) that Lambda allows a function to run before stopping it.
+    Type: Number
+    Default: '900'
+    MinValue: '1'
+    MaxValue: '900'
+  MapTagValue:
+    Description: please enter environment variable MAPTAG value.
+    Type:  String
+    Default: mig4I96YDPBNH
+  ConfigRuleName:
+    Description: please enter the name of your Config configuration Rule for MAP resource Tagging.
+    Type:  String
+    Default: lamda-demo-Config-Rule-For-MAPResource-AutoTagging
+  MessageType:
+    Description: please enter the message type for config rule.
+    Type: String
+    Default: "ConfigurationItemChangeNotification"
+  ConfigRuleName2:
+    Description: please enter the name of your Config configuration Rule for MAP resource Tagging.
+    Type: String
+    Default: lamda-demo-Config-Rule-For-MAPResource-AutoTagging-second
+  MessageType2:
+    Description: please enter the message type for config rule.
+    Type: String
+    Default: "ConfigurationItemChangeNotification"
+
+  
+Resources:
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref LambdaRoleName
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: "/"
+      Policies:
+      - PolicyName: !Ref IAMpolicyName1
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - cloudwatch:TagResource
+            - logs:TagLogGroup
+            - cassandra:TagResource
+            - kendra:TagResource
+            - fsx:TagResource
+            - logs:TagResource
+            - cassandra:TagMultiRegionResource
+            - datasync:TagResource
+            - dms:AddTagsToResource
+            - elasticbeanstalk:UpdateTagsForResource
+            - elasticbeanstalk:AddTags
+            - route53-recovery-control-config:TagResource
+            - route53domains:UpdateTagsForDomain
+            - route53-recovery-readiness:TagResource
+            - route53:*
+            - route53resolver:TagResource
+            - osis:*
+            - aoss:*
+            - kafka-cluster:*
+            - kafkaconnect:*
+            - kafka:*
+            - lambda:TagResource
+            - redshift:CreateTags
+            - imagebuilder:*
+            - databrew:TagResource
+            - redshift:*
+            - backup:*
+            - states:TagResource
+            - es:AddTags
+            - sagemaker-geospatial:TagResource
+            - secretsmanager:*
+            - ssm:AddTagsToResource
+            - mq:CreateTags
+            - ecr:TagResource
+            - ecs:TagResource
+            - sagemaker:AddTags
+            - glue:TagResource
+            - dax:TagResource
+            - sns:*
+            - ec2:CreateTags
+            - cloudfront:TagResource
+            - imagebuilder:TagResource
+            - s3-object-lambda:PutObjectVersionTagging
+            - backup-gateway:TagResource
+            - s3-object-lambda:*
+            - ecr-public:*
+            - glacier:*
+            - workspaces:CreateTags
+            - elasticloadbalancing:AddTags
+            - workspaces:*
+            - networkmanager:TagResource
+            - kinesisvideo:TagResource
+            - secretsmanager:TagResource
+            - sns:TagResource
+            - backup:TagResource
+            - backup:PutBackupVaultAccessPolicy
+            - s3-outposts:*
+            - sqs:*
+            - glue:*
+            - codepipeline:TagResource
+            - s3-outposts:PutObjectVersionTagging
+            - kms:TagResourcesa
+            - dynamodb:TagResource
+            - kms:*
+            - redshift-serverless:TagResource
+            - firehose:TagDeliveryStream
+            - emr-serverless:TagResource
+            - appstream:TagResource
+            - s3-object-lambda:PutObjectTagging
+            - kinesisvideo:TagStream
+            - emr-containers:TagResource
+            - workspaces-web:TagResource
+            - elasticfilesystem:*
+            - rds:AddTagsToResource
+            - athena:TagResource
+            - s3:*
+            - apigateway:*
+            - transfer:TagResourcesa
+            - glacier:AddTagsToVault
+            - s3-outposts:PutObjectTagging
+            - ecr-public:TagResource
+            - s3-outposts:PutBucketTagging
+            - elasticfilesystem:TagResource
+            - elasticfilesystem:CreateTags
+            - sqs:TagQueue
+            - kinesis:AddTagsToStreams
+            - ssm:*
+            - eks:TagResourcesa
+            - kinesisanalytics:TagResource
+            - appsync:TagResource
+            - network-firewall:TagResource
+            - ecr:*
+            - elasticmapreduce:AddTags
+            - elasticmapreduce:*
+            - tag:TagResources
+            Resource: "*"
+      - PolicyName: !Ref IAMpolicyName2
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            Resource: 
+            - Fn::Sub: "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+          - Effect: Allow
+            Action:
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource: 
+            - Fn::Sub: "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${FunctionName}:*"
+
+
+  LambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    DependsOn: LambdaRole
+    Properties:
+      Handler: index.lambda_handler  
+      FunctionName: !Ref FunctionName
+      Role: !GetAtt LambdaRole.Arn
+      Runtime: !Ref Runtime
+      MemorySize: !Ref MemorySize
+      Timeout: !Ref Timeout
+      Description: !Ref FunctionDescription
+      Environment:
+        Variables:
+          maptagvalue: !Ref MapTagValue
+      Code:
+        ZipFile: |
+            from __future__ import print_function
+            import json
+            import os
+            import boto3
+
+            maptagvalue = os.environ['maptagvalue']
+
+            def lambda_handler(event, context):
+               
+                print(event)
+    
+                invoking_event =json.loads(event.get('invokingEvent'))
+                # print("invoking_event data", invoking_event)
+    
+                change_type = invoking_event['configurationItemDiff']['changeType'] if invoking_event.get('configurationItemDiff') else None
+    
+                if change_type == 'CREATE':
+        
+                    data = invoking_event['configurationItem']
+                    resource_arn = data.get('ARN')
+                    region = data.get('awsRegion')
+                    creation_time = data.get('resourceCreationTime')
+                    last_modified = data['configuration'].get('lastModified')
+                    configurationItemCaptureTime = data.get('configurationItemCaptureTime', 'No Date found')
+        
+                    tags = {
+                        'map-migrated' : maptagvalue,
+                        'CreationTime': creation_time if creation_time else (last_modified if last_modified else configurationItemCaptureTime)
+                    }
+        
+                    res = add_tags_to_resource(resource_arn, region, tags)
+                else:
+                   print("No operation performed because Change type was ", change_type)
+    
+                return {
+                    'statusCode': 200,
+                    'body': json.dumps('Hello from Lambda!')
+                }
+            def add_tags_to_resource(resource_arn, region, tags):
+    
+                region_name = resource_arn.split(':')[3]
+    
+                if region_name:
+                    tag_client = boto3.client('resourcegroupstaggingapi', region_name= region_name)
+                else:
+                    tag_client = boto3.client('resourcegroupstaggingapi')
+        
+                print("adding tag"+ str(tags) +" for arn: " + resource_arn)
+    
+                try:
+                    tag_resps = tag_client.tag_resources(
+                    ResourceARNList=[resource_arn],
+                    Tags=tags
+                    )
+                    if tag_resps.get('FailedResourcesMap'):
+                        print("Tag addition failed: ")
+                        print(tag_resps.get('FailedResourcesMap'))
+        
+                except Exception as e:
+                    print("Error in adding tag for arn: ", resource_arn +" and error is ", str(e))
+
+
+# this section provides config service permission to invoke our created lambda fucntion
+
+
+  ConfigPermissionToCallLambda: 
+    Type: AWS::Lambda::Permission
+    DependsOn: LambdaFunction
+    Properties: 
+      FunctionName: 
+        Fn::GetAtt:
+        - LambdaFunction
+        - Arn
+      Action: "lambda:InvokeFunction"
+      Principal: "config.amazonaws.com"
+      SourceAccount: !Ref 'AWS::AccountId'
+
+
+  ConfigRule1ForMAPResourceTagging:
+    Type: AWS::Config::ConfigRule
+    Properties: 
+      ConfigRuleName: !Ref ConfigRuleName
+      Scope: 
+        ComplianceResourceTypes: 
+        - AWS::EC2::Instance
+        - AWS::EC2::Volume
+        - AWS::EC2::Host
+        - AWS::EC2::EIP
+        - AWS::EC2::NetworkInterface
+        - AWS::EC2::SecurityGroup
+        - AWS::EC2::NatGateway
+        - AWS::EC2::EgressOnlyInternetGateway
+        - AWS::EC2::EC2Fleet
+        - AWS::EC2::FlowLog
+        - AWS::EC2::TransitGateway
+        - AWS::EC2::TransitGatewayAttachment
+        - AWS::EC2::TransitGatewayRouteTable
+        - AWS::EC2::VPCEndpoint
+        - AWS::EC2::VPCEndpointService
+        - AWS::EC2::VPCPeeringConnection
+        - AWS::EC2::RegisteredHAInstance
+        - AWS::EC2::SubnetRouteTableAssociation
+        - AWS::EC2::LaunchTemplate
+        - AWS::EC2::NetworkInsightsAccessScopeAnalysis
+        - AWS::EC2::TrafficMirrorTarget	
+        - AWS::EC2::TrafficMirrorSession
+        - AWS::EC2::DHCPOptions
+        - AWS::EC2::IPAM
+        - AWS::EC2::NetworkInsightsPath
+        - AWS::EC2::TrafficMirrorFilter
+        - AWS::EC2::CustomerGateway
+        - AWS::EC2::InternetGateway
+        - AWS::EC2::NetworkAcl
+        - AWS::EC2::RouteTable
+        - AWS::EC2::Subnet
+        - AWS::EC2::VPC
+        - AWS::EC2::VPNConnection
+        - AWS::EC2::VPNGateway
+        ############################
+        - AWS::ECR::Repository
+        - AWS::ECR::RegistryPolicy
+        - AWS::ECR::PullThroughCacheRule
+        - AWS::ECR::PublicRepository
+        ##################################3
+        - AWS::EKS::Cluster
+        - AWS::EKS::FargateProfile
+        - AWS::EKS::IdentityProviderConfig
+        - AWS::EKS::Addon
+       #########################################
+        - AWS::ECS::Cluster
+        - AWS::ECS::TaskDefinition
+        - AWS::ECS::Service
+       #############################################
+        - AWS::EFS::FileSystem
+        - AWS::EFS::AccessPoint
+        ##################################3
+        - AWS::ElasticLoadBalancingV2::LoadBalancer
+        - AWS::ElasticLoadBalancingV2::Listener
+        - AWS::ElasticLoadBalancing::LoadBalancer
+       ###################################################
+        - AWS::EMR::SecurityConfiguration
+        ####################################
+        - AWS::S3::Bucket
+        - AWS::S3::AccountPublicAccessBlock
+        - AWS::S3::MultiRegionAccessPoint
+        - AWS::S3::StorageLens
+        ######################################
+        - AWS::Glue::Job
+        - AWS::Glue::Classifier
+        - AWS::Glue::MLTransform
+        #####################################3
+        - AWS::KMS::Key
+        - AWS::KMS::Alias
+        ####################################
+        - AWS::Kinesis::Stream
+        - AWS::Kinesis::StreamConsumer
+        - AWS::KinesisAnalyticsV2::Application
+        - AWS::KinesisVideo::SignalingChannel
+        #############################################
+        - AWS::DynamoDB::Table
+        ###################################
+        - AWS::Athena::WorkGroup
+        - AWS::Athena::DataCatalog	
+        #################################
+        - AWS::Backup::BackupPlan
+        - AWS::Backup::BackupSelection
+        - AWS::Backup::BackupVault
+        - AWS::Backup::RecoveryPoint
+        - AWS::Backup::ReportPlan
+        ############################
+        - AWS::CloudWatch::Alarm
+        - AWS::CloudWatch::MetricStream
+        ###############################
+        - AWS::Cassandra::Keyspace
+        ##########################
+        - AWS::DMS::EventSubscription
+        - AWS::DMS::ReplicationInstance
+        - AWS::DMS::ReplicationTask
+        - AWS::DMS::Certificate
+        ############################
+        - AWS::DataSync::LocationSMB
+        - AWS::DataSync::LocationFSxLustre
+        - AWS::DataSync::LocationFSxWindows
+        - AWS::DataSync::LocationS3	
+        - AWS::DataSync::LocationEFS	
+        - AWS::DataSync::LocationNFS	
+        - AWS::DataSync::LocationHDFS	
+        - AWS::DataSync::LocationObjectStorage	
+        - AWS::DataSync::Task	
+       #######################################
+        - AWS::ElasticBeanstalk::Application
+        - AWS::ElasticBeanstalk::ApplicationVersion
+        - AWS::ElasticBeanstalk::Environment
+       #############################################
+        - AWS::CloudFront::Distribution
+
+      Source: 
+         Owner: "CUSTOM_LAMBDA"
+         SourceDetails: 
+           - 
+              EventSource: "aws.config"
+              MessageType: !Ref MessageType
+         SourceIdentifier: !GetAtt LambdaFunction.Arn
+
+
+  ConfigRule2ForMAPResourceTagging:
+    Type: AWS::Config::ConfigRule
+    Properties: 
+      ConfigRuleName: !Ref ConfigRuleName2
+      Scope: 
+        ComplianceResourceTypes: 
+        ###############################
+        - AWS::ApiGateway::Stage
+        - AWS::ApiGateway::RestApi
+        - AWS::ApiGatewayV2::Stage	
+        - AWS::ApiGatewayV2::Api
+        ##################################
+        - AWS::AppStream::DirectoryConfig
+        ##############################3
+        - AWS::AppSync::GraphQLApi
+        #############################
+        - AWS::Redshift::Cluster
+        - AWS::Redshift::ClusterParameterGroup	
+        - AWS::Redshift::ClusterSecurityGroup
+        - AWS::Redshift::ScheduledAction
+        - AWS::Redshift::ClusterSnapshot
+        - AWS::Redshift::ClusterSubnetGroup
+        - AWS::Redshift::EventSubscription
+        ########################################3
+        - AWS::RDS::DBInstance
+        - AWS::RDS::DBSecurityGroup
+        - AWS::RDS::DBSnapshot
+        - AWS::RDS::DBSubnetGroup
+        - AWS::RDS::EventSubscription
+        - AWS::RDS::DBCluster
+        - AWS::RDS::DBClusterSnapshot
+        - AWS::RDS::GlobalCluster
+        ##################################3
+        - AWS::Route53::HostedZone
+        - AWS::Route53::HealthCheck
+        - AWS::Route53Resolver::ResolverEndpoint
+        - AWS::Route53Resolver::ResolverRule
+        - AWS::Route53Resolver::ResolverRuleAssociation	
+        - AWS::Route53Resolver::FirewallDomainList
+        - AWS::AWS::Route53Resolver::FirewallRuleGroupAssociation
+        - AWS::Route53RecoveryReadiness::Cell
+        - AWS::Route53RecoveryReadiness::ReadinessCheck
+        - AWS::Route53RecoveryReadiness::RecoveryGroup
+        - AWS::Route53RecoveryControl::Cluster
+        - AWS::Route53RecoveryControl::ControlPanel
+        - AWS::Route53RecoveryControl::RoutingControl
+        - AWS::Route53RecoveryControl::SafetyRule
+        - AWS::Route53RecoveryReadiness::ResourceSet
+        #############################################3
+        - AWS::SageMaker::CodeRepository
+        - AWS::SageMaker::AppImageConfig
+        - AWS::SageMaker::Image
+        - AWS::SageMaker::Model
+        - AWS::SageMaker::NotebookInstance
+        - AWS::SageMaker::NotebookInstanceLifecycleConfig
+        - AWS::SageMaker::EndpointConfig
+        - AWS::SageMaker::Workteam
+        #########################################
+        - AWS::SecretsManager::Secret
+        #################################3
+        - AWS::SNS::Topic
+        ################3
+        - AWS::SQS::Queue	
+        ##########################
+        - AWS::StepFunctions::Activity
+        - AWS::StepFunctions::StateMachine	
+        ###################################
+        - AWS::SSM::ManagedInstanceInventory
+        - AWS::SSM::PatchCompliance
+        - AWS::SSM::AssociationCompliance
+        - AWS::SSM::FileData
+        #################################
+        - AWS::Transfer::Workflow
+        ###########################
+        - AWS::WorkSpaces::ConnectionAlias
+        - AWS::WorkSpaces::Workspace
+        ###################################3
+        - AWS::CloudFront::Distribution
+        - AWS::CloudFront::StreamingDistribution
+        #####################################3
+        - AWS::NetworkManager::TransitGatewayRegistration
+        - AWS::NetworkManager::Site
+        - AWS::NetworkManager::Device
+        - AWS::NetworkManager::Link
+        - AWS::NetworkManager::GlobalNetwork
+        ########################################3
+        - AWS::ImageBuilder::ImagePipeline
+        - AWS::ImageBuilder::DistributionConfiguration
+        - AWS::ImageBuilder::InfrastructureConfiguration
+        #################################################
+        - AWS::Lambda::Function
+        #################################3
+        - AWS::AmazonMQ::Broker
+        ##################################
+        - AWS::MSK::Cluster
+        #############################3
+        - AWS::NetworkFirewall::Firewall
+        - AWS::NetworkFirewall::FirewallPolicy
+        - AWS::NetworkFirewall::RuleGroup
+        - AWS::NetworkFirewall::TLSInspectionConfiguration
+        ####################################
+        - AWS::Elasticsearch::Domain
+        - AWS::OpenSearch::Domain
+        #######################################
+        - AWS::CodePipeline::Pipeline
+      Source: 
+         Owner: "CUSTOM_LAMBDA"
+         SourceDetails: 
+           - 
+              EventSource: "aws.config"
+              MessageType: !Ref MessageType2
+         SourceIdentifier: !GetAtt LambdaFunction.Arn
+
+Outputs:
+    LambdaRoleArn:
+        Value: !GetAtt LambdaRole.Arn
+        Export: 
+          Name: !Sub '${AWS::StackName}-LambdaRoleArn'
+    LambdaFunctionArn:
+        Description: The ARN of the created lambda fucntion.
+        Value: !GetAtt LambdaFunction.Arn
+        Export:
+          Name: !Sub '${AWS::StackName}-LambdaFunctionArn'
+    ConfigRule1ForMAPResourceTaggingArn:
+        Value: !GetAtt ConfigRule1ForMAPResourceTagging.Arn
+        Export: 
+          Name: !Sub '${AWS::StackName}-ConfigRule1ForMAPResourceTaggingArn'
+    ConfigRule2ForMAPResourceTaggingArn:
+        Value: !GetAtt ConfigRule2ForMAPResourceTagging.Arn
+        Export: 
+          Name: !Sub '${AWS::StackName}-ConfigRule2ForMAPResourceTaggingArn'

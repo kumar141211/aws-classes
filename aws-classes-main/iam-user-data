@@ -1,0 +1,16 @@
+commands
+
+######to install unzip package
+apt install -y  unzip
+
+##########to isntall aws cli in ubuntu server
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install
+
+
+to create a ec2 key pair
+aws ec2 create-key-pair --key-name demo-keypair --query 'KeyMaterial' --output text > demo-keypair.pem
+
+to create s3 bucket
+aws s3api create-bucket --bucket test-t0-delete-xyzwwww --region ap-south-1 --create-bucket-configuration LocationConstraint=ap-south-1

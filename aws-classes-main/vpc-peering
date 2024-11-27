@@ -1,0 +1,42 @@
+vpc-1
+10.0.0.0/16 -vpc cidr
+
+10.0.0.0/20 - subnet1
+10.0.1.0/20 - subnet2
+10.0.2.0/20 - subnet3
+10.0.3.0/20 - subnet4
+
+vpc-2
+10.1.0.0/16 - vpc cidr
+
+10.1.0.0/20 - subnet1
+10.1.1.0/20 - subnet2
+10.1.2.0/20 - subnet3
+10.1.3.0/20 - subnet4
+
+vpc-3
+10.2.0.0/16 - vpc cidr
+
+10.2.0.0/20 - subnet1
+10.2.1.0/20 - subnet2
+10.2.2.0/20 - subnet3
+10.2.3.0/20 - subnet4
+
+step 1
+create 3 vpc using above data
+
+step 2
+create 2 servers in different vpc's with full traffic permissions
+and create a IAM and attach to ec2 for ssh connection through aws console
+trying pinging private ip of second server 
+
+step3 
+create a peering connection in vpc module
+select requestor and acceptor vpc
+after creation click on action and accept request
+now go vpc 1 private route table click on add route and enter vpc 2 cidr and select connection type peering and add created peering connection
+now go to vpc 2 private route table click on add route and enter vpc 1 cidr and select connection type peering and add created peering connection
+
+step 4 
+now check connection trying pining from both servers it should work
+

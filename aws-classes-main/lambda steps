@@ -1,0 +1,7 @@
+1. enable aws config service from aws console
+
+2. download lambda yaml from git repo
+
+3. upload yaml in cloudformation with your own values or same default values
+
+4. after successfully deployment of stack create a ec2 instance without any tags, lambda will auto tag the creted resource. you can check other services also like s3,vpc etc.., 

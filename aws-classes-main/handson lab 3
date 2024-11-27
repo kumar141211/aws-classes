@@ -1,0 +1,18 @@
+1. create a lambda function to auto tag resources (refer 8-nov class)
+
+2. create a vpc using cloudformation template
+
+3. create a autoscaling group (launch template) use ubuntu server AMI
+
+4. auto scaling group will create a server if u give desired as 1
+
+5. create a ec2 user to login using password instead key pair
+
+6. create SNS topic and add your email id for alerts and suscribe the notifications 
+
+7. configure cloudwatch to the server created above for cpu utilisation and status check failure (set up alarms) -- this will send alarms to given mail id
+
+8. dowland stress package in ec2 and apply as we did in our auto scaling class.
+
+9. after completing all the above steps -- you should get alerts on given mail id as the cpu stress is high and auto scaling group should create a new instance 
+check the instance have the same user u created in first server.

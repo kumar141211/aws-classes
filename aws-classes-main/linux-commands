@@ -1,0 +1,47 @@
+
+
+#List in present directory
+ls                 - will show list of files side ny side view
+ls -ltr            - Will show detailed list with file details
+ll                 - wll show list in one by one format
+
+
+# file
+touch <file-name>  - this will create a file
+vi <file-name>     - will edit file (press i to insert content, press esc to exit insert mode, press :q! to exit without saving and press :wq to save and exit) w- save; q- exit;!- force
+cat <file-name>    - will display file content om screen
+rm -rf <file-name> - this will delete given file name
+
+
+#To get current location
+pwd                - will show current present working directory
+
+# directory 
+mkdir <directory-name>      - this will create a directory
+cd <directory-name>         - this will change directory
+cd ..                       - this will exit from current directory
+rm -rf <directory-name>     - this will delete directory
+
+ctrl+L       - wll clear screen
+history      - will show history of the commands
+ctrl+shift+v - this will paste content
+clear        - screen clear/earse
+cp           - copy command
+mv           - move/rename command
+ctrl+d       - exit from current user
+date         - will show date and time (default utc timw will be shown u can change to local time zone using commands)
+
+
+
+
+
+#permissions
+4 - read
+2 - write
+1 - exicute
+
+chmod <200/400/600/700> <directory/file-name>    - this will change permission of a file or directory
+example : chmod 400 <file-name>
+
+
+https://www.hostinger.in/tutorials/linux-commands?utm_campaign=Generic-Tutorials-DSA|NT:Se|LO:IN-t5&utm_medium=ppc&gad_source=1&gclid=Cj0KCQjwgrO4BhC2ARIsAKQ7zUnwIBrRdO2GuMvQqs6LtUgKAoUO-9mfWsKufVd7fQmWl0o-0HtDIXcaAsqzEALw_wcB

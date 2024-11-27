@@ -1,0 +1,123 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: eks-client-server.
+Parameters:
+  VpcId:
+    Description: Select your VPC Id.
+    Type: 'AWS::EC2::VPC::Id'
+    Default: 'vpc-0fc1febcc127a5971'
+  SubnetId1:
+    Description: Select your Subnet Id.
+    Type: 'AWS::EC2::Subnet::Id'
+    Default: 'subnet-06d93e4b54fa949e6'
+  SshServerKeyName:
+    Description: Name of an existing EC2 KeyPair to uat Server.
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    ConstraintDescription: Must be the name of an existing EC2 KeyPair.
+  InstanceAMIId:
+    Description: Type the base Ami Id.
+    Type: String
+    Default: 'ami-09534f13ac05bf135'
+  InstanceType:
+    Description: Type the instance.
+    Type: String
+    Default: t3a.small
+  InstanceSecurityGroupName:
+    Description: Enter the security Group Name.
+    Type: String
+    Default: 'eks-client-uat-sg'
+  Appname:
+    Description: Enter the Application Name.
+    Type: String
+    Default: 'eks-client-uat'
+  Clustername:
+    Description: Enter the Cluster Name.
+    Type: String
+    Default: 'na'
+  Environmentname:
+    Description: Enter the Environmentname.
+    Type: String
+    Default: 'uat'
+  RoleTag:
+    Description: Enter the role of the Resource.
+    Type: String
+    Default: 'uatEC2Role'
+  Remark:
+    Description: Enter the Rake Name.
+    Type: String
+    Default: 'eks-client'  
+  Ec2RootVolumeSize:
+    Description: RootVolumeSize minimum value in GB.
+    Type: Number
+    Default: 20
+  InstanceName1:
+    Description: Enter the Name of the Instance.
+    Default: 'eks-client-uat'
+    Type: String
+Resources:
+  EC2ServerSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: EC2 Server Security Group
+      GroupName: !Ref InstanceSecurityGroupName
+      VpcId: !Ref VpcId
+      SecurityGroupEgress:
+        - IpProtocol: '-1'
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Ref InstanceSecurityGroupName
+        - Key: appname
+          Value: !Ref Appname
+        - Key: businessunit
+          Value: Default
+        - Key: environment
+          Value: !Ref Environmentname
+        - Key: remarks
+          Value: !Ref Remark
+  
+  EC2Ec2Instance1:
+    Type: 'AWS::EC2::Instance'
+    DependsOn:
+      - EC2ServerSecurityGroup
+    Properties:
+      DisableApiTermination: 'True'
+      InstanceInitiatedShutdownBehavior: stop
+      ImageId: !Ref InstanceAMIId
+      InstanceType: !Ref InstanceType
+      KeyName: !Ref SshServerKeyName
+      Monitoring: 'false'
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            DeleteOnTermination: 'true'
+            VolumeSize: !Ref Ec2RootVolumeSize
+            Encrypted: 'true'
+            VolumeType: "gp3"            
+      Tags:
+        - Key: Name
+          Value: !Ref InstanceName1
+        - Key: appname
+          Value: !Ref Appname
+        - Key: businessunit
+          Value: Default
+        - Key: cluster
+          Value: !Ref Clustername
+        - Key: environment
+          Value: !Ref Environmentname
+        - Key: ownername
+          Value: blusmart
+        - Key: role
+          Value: !Ref RoleTag
+        - Key: starttime
+          Value: na
+        - Key: stoptime
+          Value: na
+        - Key: created_by
+          Value: uipl  
+      NetworkInterfaces:
+        - DeleteOnTermination: 'true'
+          Description: Primary network interface
+          DeviceIndex: 0
+          SubnetId: !Ref SubnetId1
+          GroupSet:
+            - !Ref EC2ServerSecurityGroup

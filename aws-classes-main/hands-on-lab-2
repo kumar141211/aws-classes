@@ -1,0 +1,13 @@
+###create a console user and give permissions for below tasks and create everything using that user#########
+
+#######only using cft create aws infra [vpc,ec2]#########################
+
+2. create 3 different vpc's using same cft by changing values
+    - create peering between any two vpc's and test connections from server (create server using cloud formation stack)from both vpc's
+
+3. create/configure openVPN and connect your private server(servers created in above task)
+
+4. create a role and attach to your server and check the given permissions working from inside the server
+
+5. create a AWS CLI user and login inside server and create or list services/ check permissions
+

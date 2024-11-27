@@ -1,0 +1,19 @@
+create a ubuntu ec2 and enable public ip, Connect to ec2 instance 
+
+#update ubuntu repo
+sudo apt update
+
+#Install apache2 web package
+sudo apt install apache2
+
+#start and enable apache2 service
+sudo systemctl start apache2
+sudo systemctl enable apache2
+
+#adjust firewall (optional)
+sudo ufw allow 'Apache Full'
+
+#hit public ip of the server in web
+
+#custom HTML page (optional)
+echo "<html><h1>Hello, World\!</h1></html>" | sudo tee /var/www/html/index.html

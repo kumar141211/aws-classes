@@ -1,0 +1,22 @@
+step 1:
+Create a VPC with 2 public subnets and 2 private subnets, and attach IGW/NAT and route tables.
+10.0.0.0/16 -vpc
+10.0.1.0/24 - subnets
+10.0.2.0/24 - subnets
+10.0.3.0/24 -subnets
+10.0.4.0/24 - subnets
+
+Step 2:
+create a public instance and attach EIP to it
+install basic apache2 page
+
+Step 3:
+Create a back-up image (AMI) for above created instance
+
+Step 4:
+create a new instance using backup and associate same EIP to this instance (remove EIP from first instance)
+and check the page status 
+
+Step 5: 
+Create a windows public server and connect using RDP from your local laptop
+
