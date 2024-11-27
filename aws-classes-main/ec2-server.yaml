@@ -111,9 +111,7 @@ Resources:
         - Key: starttime
           Value: na
         - Key: stoptime
-          Value: na
-        - Key: created_by
-          Value: uipl  
+          Value: na 
       NetworkInterfaces:
         - DeleteOnTermination: 'true'
           Description: Primary network interface
